@@ -59,7 +59,7 @@ Instead of relying on exact title matches, the system ranks results using semant
 ## 🖼️ Screenshots
 
 <p align="center">
-  <img src="screenshots/homepage.jpg" width="250"/>
+  <img src="screenshots/Slides_page-0009.jpg" width="250"/>
 </p>
 
 ---
