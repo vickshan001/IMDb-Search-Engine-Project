@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IMDB Search Engine</title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="main">
+        <!-- Home Page -->
+        <div class="home">
+            <div class="container">
+                <h1 class="headline">IMDb Search Engine</h1>
+                <form action="" class="imdb-search-form">
+                    <input type="search" placeholder="Search for a Movie, Genre, Actor..." class="imdb-search-input" id="imdb-search-input">
+                    <button type="submit" class="search-button">Search</button>
+                </form>
+            </div>
+        </div>
+        <!-- Results Page -->
+        <div class="result hidden">
+            <div class="container">
+                <div class="display-results">
+                    <!-- Results will be shown here -->
+                </div>
+            </div>
+        </div>
+    </div>
+       
+<script>
+    $(document).ready(function() {
+        $(".imdb-search-form").submit(function(event) {
+            event.preventDefault();
+            var keyword = $("#imdb-search-input").val();
+            if (keyword !== "") {
+                searchMovies(keyword);
+                $(".home").addClass("search-bar-top");
+                $(".result").removeClass("hidden");
+            } else {
+                alert("Enter a keyword into the search bar");
+            }
+        });
+    
+        // Function to search movies
+        function searchMovies(keyword) {
+            console.log("Sending search request to server for keyword:", keyword);
+            fetch('https://vickshan001.pythonanywhere.com/search?query=' + keyword)
+            .then(response => response.json())
+            .then(data => {
+                console.log("Search results:", data);
+                showResults(data.search_results);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    
+        // Display the search results
+        function showResults(results) {
+            console.log("Showing results for the search query.");
+            $(".display-results").html(""); // Clear previous results
+            if (results.length === 0) {
+                $(".display-results").html("<p>No results found. Please try a different search.</p>");
+                return;
+            }
+
+            results.forEach(function(movie) {
+                var movieHtml = `
+                    <div class='movie-result'>
+                        <img src="${movie.Poster_Link}" alt="Poster" class="movie-poster" />
+                        <div class="movie-info">
+                            <h3>${movie.Series_Title} (${movie.Released_Year})</h3>
+                            <p><strong>Rating:</strong> ${movie.IMDB_Rating} | <strong>Genre:</strong> ${movie.Genre} | <strong>Runtime:</strong> ${movie.Runtime}</p>
+                            <p><strong>Director:</strong> ${movie.Director}</p>
+                            <p><strong>Stars:</strong> ${movie.Stars.join(', ')}</p>
+                            <p>${movie.Overview}</p>
+                        </div>
+                    </div>
+                `;
+                $(".display-results").append(movieHtml);
+            });
+        }
+    });
+</script> 
+
+</body>
+</html>
+
+<style>
+    /* Reset and Basic Styling */
+    body, html {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        font-family: 'Poppins', sans-serif;
+        background: #ffffff; /* White background */
+        color: #333; /* Dark text for contrast */
+    }
+    
+    /* Container */
+    .container {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+        text-align: center;
+    }
+    
+    /* Headline */
+    .headline {
+        font-size: 2.1rem;
+        color: #007BFF; /* Bright blue for contrast */
+        margin-bottom: 25px; /* Reduced gap */
+    }
+    
+    /* Search Form */
+    .imdb-search-form {
+        margin-bottom: 20px; /* Reduced gap */
+        display: flex;
+        justify-content: center;
+        gap: 10px; /* Space between elements */
+    }
+    
+    .imdb-search-input {
+        flex-grow: 1;
+        padding: 10px 20px;
+        border: 1px solid #ccc; /* Light border */
+        border-radius: 10px; /* Rounded edges */
+        outline: none;
+        font-size: 1rem;
+        color: #333;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Subtle shadow for depth */
+    }
+    
+    .search-button {
+        border: none;
+        background: #007BFF; /* Matching the headline color */
+        color: #ffffff;
+        padding: 11px 20px;
+        border-radius: 10px; /* Rounded edges */
+        cursor: pointer;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Subtle shadow for depth */
+    }
+    
+    .search-button:hover {
+        background: #0056b3; /* Slightly darker shade on hover */
+        transform: scale(1.05); /* Button expands */
+    }
+    
+    /* Results Display */
+    .display-results {
+        text-align: left;
+        margin-top: 20px;
+    }
+    
+    .movie-result {
+        background: #f8f9fa; /* Slightly off-white for blocks */
+        padding: 15px;
+        border-radius: 15px; /* Rounded corners */
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Shadow for depth */
+        transition: transform 0.3s ease;
+    }
+    
+    .movie-result:hover {
+        transform: scale(1.02); /* Expands like a card on hover */
+    }
+    
+    .movie-poster {
+        max-width: 100px;
+        border-radius: 10px; /* Rounded image edges */
+        margin-right: 20px;
+    }
+    
+    .movie-info h3 {
+        margin-top: 0;
+        color: #007BFF; /* Color theme consistent with buttons and headlines */
+    }
+    
+    .movie-info p {
+        margin: 5px 0;
+        font-size: 0.9rem;
+    }
+    
+    /* Responsiveness */
+    @media (max-width: 600px) {
+        .imdb-search-form {
+            flex-direction: column; /* Stack elements vertically on smaller screens */
+        }
+    
+        .search-button {
+            width: 50%; /* Button width on smaller screens */
+            margin: 0 auto; /* Center the button */
+            margin-top: 10px; /* Space above the button */
+        }
+    }    
+</style>
